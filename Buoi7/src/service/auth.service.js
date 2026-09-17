@@ -1,13 +1,13 @@
 import * as usersRepository from "../repository/users.repository.js";
 import { createUser } from "./users.service.js";
-import { verifyPassword } from "../utils/password.js";
-import { signToken, verifyToken } from "../utils/token.js";
+import { verifyPassword } from "../utils/passwordhelper.js";
+import { signToken, verifyToken } from "../utils/jwt.helper.js";
 import { UnauthorizedError } from "../core/error.response.js";
 
 export const register = (data) => createUser(data);
 
 export const login = async ({ email, password }) => {
-  const user = await usersRepository.findByEmailWithPassword(email);
+  const user = await usersRepository.findByEmail(email);
   if (!user || !(await verifyPassword(password, user.password_hash))) {
     throw new UnauthorizedError("Invalid email or password");
   }

@@ -5,9 +5,10 @@ import { UnauthorizedError } from "../core/error.response.js";
 const lifetimes = { access: 15 * 60, refresh: 7 * 24 * 60 * 60 };
 
 const secretFor = (type) => {
-  const secret = type === "access" ? config.auth.accessSecret : config.auth.refreshSecret;
+  const secret = type === "access" ? config.jwt.accessSecret : config.jwt.refreshSecret;
   if (!secret || Buffer.byteLength(secret) < 32) {
-    throw new Error(`JWT_${type.toUpperCase()}_SECRET must contain at least 32 bytes`);
+    const name = type === "access" ? "JWT_SECRET (or JWT_ACCESS_SECRET)" : "JWT_REFRESH_SECRET";
+    throw new Error(`${name} must contain at least 32 bytes`);
   }
   return secret;
 };
@@ -15,7 +16,7 @@ const secretFor = (type) => {
 export const checkTokenConfig = () => {
   secretFor("access");
   secretFor("refresh");
-  if (config.auth.accessSecret === config.auth.refreshSecret) {
+  if (config.jwt.accessSecret === config.jwt.refreshSecret) {
     throw new Error("JWT access and refresh secrets must differ");
   }
 };

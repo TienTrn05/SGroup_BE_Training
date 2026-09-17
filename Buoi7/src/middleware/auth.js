@@ -1,5 +1,5 @@
 import { UnauthorizedError } from "../core/error.response.js";
-import { verifyToken } from "../utils/token.js";
+import { verifyToken } from "../utils/jwt.helper.js";
 
 export const requireAuth = (req, res, next) => {
   const match = /^Bearer ([^\s]+)$/i.exec(req.headers.authorization ?? "");

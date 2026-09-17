@@ -1,6 +1,6 @@
 import * as usersRepository from "../repository/users.repository.js";
 import { ConflictError } from "../core/error.response.js";
-import { hashPassword } from "../utils/password.js";
+import { hashPassword } from "../utils/passwordhelper.js";
 
 // Map the constraints in sgroup_lastest.sql to API errors.
 const handleDatabaseError = (error) => {
@@ -8,7 +8,9 @@ const handleDatabaseError = (error) => {
     throw new ConflictError("Email already exists");
   }
   if (error.code === "23503" || error.code === "23001") {
-    throw new ConflictError("User is referenced by other records and cannot be deleted");
+    throw new ConflictError(
+      "User is referenced by other records and cannot be deleted",
+    );
   }
   throw error;
 };
@@ -35,14 +37,19 @@ export const createUser = async (userData) => {
 
 export const updateUser = async (userId, updatedData) => {
   if (!(await usersRepository.findById(userId))) return null;
-  if (updatedData.email !== undefined && await usersRepository.emailExists(updatedData.email, userId)) {
+  if (
+    updatedData.email !== undefined &&
+    (await usersRepository.emailExists(updatedData.email, userId))
+  ) {
     throw new ConflictError("Email already exists");
   }
   const changes = {};
   if (updatedData.name !== undefined) changes.name = updatedData.name;
-  if (updatedData.email !== undefined) changes.email = updatedData.email.trim().toLowerCase();
+  if (updatedData.email !== undefined)
+    changes.email = updatedData.email.trim().toLowerCase();
   if (updatedData.role !== undefined) changes.role = updatedData.role;
-  if (updatedData.password !== undefined) changes.password_hash = await hashPassword(updatedData.password);
+  if (updatedData.password !== undefined)
+    changes.password_hash = await hashPassword(updatedData.password);
   try {
     return await usersRepository.update(userId, changes);
   } catch (error) {
