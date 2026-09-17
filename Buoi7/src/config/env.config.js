@@ -16,9 +16,9 @@ export const config = {
     database: process.env.DB_NAME || "postgres",
   },
   jwt: {
-    accessSecret: process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET,
+    accessSecret: process.env.JWT_SECRET,
     refreshSecret: process.env.JWT_REFRESH_SECRET,
-    accessSecretExpires: process.env.JWT_EXPIRES_IN || "1d",
-    refreshExpires: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
+    accessExpiresIn: Number(process.env.JWT_EXPIRES_IN),
+    refreshExpiresIn: Number(process.env.JWT_REFRESH_EXPIRES_IN),
   },
 };
