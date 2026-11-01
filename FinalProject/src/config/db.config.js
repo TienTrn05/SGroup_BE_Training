@@ -3,12 +3,16 @@ const { Pool } = pkg;
 import { config } from "./env.config.js";
 
 const pool = new Pool({
-  host: config.db.host,
-  port: config.db.port,
-  user: config.db.user,
-  password: config.db.password,
-  database: config.db.database,
-  connectionTimeoutMillis: 5000,
+  ...(config.db.connectionString
+    ? { connectionString: config.db.connectionString }
+    : {
+        host: config.db.host,
+        port: config.db.port,
+        user: config.db.user,
+        password: config.db.password,
+        database: config.db.database,
+      }),
+  connectionTimeoutMillis: 15000,
 });
 
 export const connectDB = async () => {
